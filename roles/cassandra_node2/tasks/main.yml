@@ -1,0 +1,29 @@
+---
+
+ - name: Create Cassandra directory
+   file: path=/etc/cassandra state=directory owner={{ user }} group={{ group }} mode=0777
+
+ - name: Download Cassandra 
+   command: wget http://www.us.apache.org/dist/cassandra/2.1.9/apache-cassandra-2.1.9-bin.tar.gz dest=/etc/cassandra/ creates=/etc/cassandra/apache-cassandra-2.2.1-bin.tar.gz 
+ 
+ - name: extract Cassandra file
+   unarchive: src=/etc/cassandra/apache-cassandra-2.2.1-bin.tar.gz dest=/etc/cassandra creates=/etc/cassandra/apache-cassandra-2.2.1 owner={{ user }} group={{ group }} mode=0777 copy=no
+ 
+ - name: Creates directory for cassandra lib
+   file: path=/var/lib/cassandra state=directory owner={{ user }} group={{ group }} mode=0777
+
+ - name: Creates directory for cassandra log
+   file: path=/var/log/cassandra state=directory owner={{ user }} group={{ group }} mode=0777
+
+ - name: copy the bashprofile template
+   template: src=bashprofile dest=/home/{{ user }}/.bash_profile
+
+ - name: Fix ownership
+   file: state=directory path=/etc/cassandra/apache-cassandra-2.2.1 owner={{ user }} group={{ group }} recurse=yes
+
+ - name: copy the cassandra template 
+   template: src=cassandra.yaml dest=/etc/cassandra/apache-cassandra-2.2.1/conf owner={{ user }} group={{ group }}
+
+ - name: Start Cassandra 
+   command: /etc/cassandra/apache-cassandra-2.2.1/bin/cassandra
+

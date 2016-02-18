@@ -1,0 +1,27 @@
+---
+- name: download jboss
+  command: wget http://download.jboss.org/jbossas/7.1/jboss-as-7.1.1.Final/jboss-as-7.1.1.Final.tar.gz dest=/opt/jboss-as-7.1.1.Final.tar.gz creates=/opt/jboss-as-7.1.1.Final.tar.gz
+
+- name: Extract archive
+  unarchive: src=/opt/jboss-as-7.1.1.Final.tar.gz dest=/usr/share/ creates=/usr/share/jboss-as-7.1.1.Final copy=no owner={{ user }} group={{ group }} mode=0777
+
+  # Rename the dir to avoid encoding the version in the init script
+- name: Rename install directory
+  command: chdir=/usr/share /bin/mv jboss-as-7.1.1.Final jboss-as creates=/usr/share/jboss-as
+
+- name: Copying standalone.xml configuration file
+  template: src=standalone.xml dest=/usr/share/jboss-as/standalone/configuration/
+  notify: restart jboss
+
+- name: Change ownership of JBoss installation
+  file: path=/usr/share/jboss-as/ owner={{ user }} group={{ group }} state=directory recurse=yes
+
+- name: Copy the init script
+  copy: src=jboss-as-standalone.sh dest=/etc/init.d/jboss mode=0755
+
+- name: Enable JBoss to be started at boot
+  service: name=jboss enabled=yes state=started
+
+- name: Start Jboss script
+  command: '/usr/share/jboss-as/bin/standalone.sh' 
+  sudo: no

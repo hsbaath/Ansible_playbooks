@@ -1,0 +1,9 @@
+---
+- name: Installation of Tomacat
+  hosts: {{ hosts}}
+  remote_user: {{ user }}
+  sudo: True
+
+  roles:
+    - jdk_1.8
+    - tomcat

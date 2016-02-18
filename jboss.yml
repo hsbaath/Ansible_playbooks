@@ -1,0 +1,9 @@
+---
+- name: Installation of Jboss
+  hosts: {{ hosts}}
+  remote_user: {{ user }}
+  sudo: True
+
+  roles:
+    - jdk_1.7
+    - jboss
